@@ -1,25 +1,31 @@
-import { Field, SmartContract, state, State, method } from 'o1js';
+import { Bytes, createEcdsaV2, createForeignCurveV2, Hash, Crypto, Field } from "o1js";
+const payload = new Uint8Array([1]);
 
-/**
- * Basic Example
- * See https://docs.minaprotocol.com/zkapps for more info.
- *
- * The Add contract initializes the state variable 'num' to be a Field(1) avalue by default when deployed.
- * When the 'update' method is called, the Add contract adds Field(2) to its 'num' contract state.
- *
- * This file is safe to delete and replace with your own contract.
- */
-export class Add extends SmartContract {
-  @state(Field) num = State<Field>();
+class Curve extends createForeignCurveV2(Crypto.CurveParams.Secp256k1) {}
+class Ecdsa extends createEcdsaV2(Curve) {}
 
-  init() {
-    super.init();
-    this.num.set(Field(1));
-  }
+function main() {
+  let generator = Curve.generator;
+  console.log(Curve.generator);
+  console.log(Curve.modulus)
 
-  @method async update() {
-    const currentState = this.num.getAndRequireEquals();
-    const newState = currentState.add(2);
-    this.num.set(newState);
-  }
+  let privateKeyAlice = Curve.Scalar.random();
+  let publicKeyAlice = Curve.generator.scale(privateKeyAlice);
+
+  let privateKeyBob = Curve.Scalar.random();
+  let publicKeyBob = Curve.generator.scale(privateKeyBob);
+
+  let aliceCalculatesSharedKey = publicKeyBob.scale(privateKeyAlice);
+  let bobCalculatesSharedKey = publicKeyAlice.scale(privateKeyBob);
+  console.log("Shared Key Alice")
+  console.log(aliceCalculatesSharedKey.x.toBigInt())
+  console.log(aliceCalculatesSharedKey.y.toBigInt())
+  console.log("\n")
+  console.log("Shared Key Bob")
+  console.log(bobCalculatesSharedKey.x.toBigInt())
+  console.log(bobCalculatesSharedKey.y.toBigInt()) 
+
+
 }
+
+main();
