@@ -30,8 +30,8 @@ describe('ECDH Secp256k1', () => {
         const publicKey1 = ecdh.publicKey(privateKey1);
         const publicKey2 = ecdh.publicKey(privateKey2);
 
-        const sharedSecret1 = ecdh.computeSecret(privateKey1, publicKey2);
-        const sharedSecret2 = ecdh.computeSecret(privateKey2, publicKey1);
+        const sharedSecret1 = ECDHSecp256k1.computeSharedSecret(privateKey1, publicKey2);
+        const sharedSecret2 = ECDHSecp256k1.computeSharedSecret(privateKey2, publicKey1);
 
         expect(sharedSecret1.toBigint()).toStrictEqual(sharedSecret2.toBigint());
     });

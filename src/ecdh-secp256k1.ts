@@ -56,7 +56,7 @@ class ECDHSecp256k1 {
    * @param {ForeignCurveV2} peersPublicKey - The public key of the peer.
    * @returns {ForeignCurveV2} - The computed shared secret.
    */
-  computeSecret(privateKey: CanonicalForeignField, peersPublicKey: ForeignCurveV2): ForeignCurveV2 {
+  static computeSharedSecret(privateKey: CanonicalForeignField, peersPublicKey: ForeignCurveV2): ForeignCurveV2 {
     // Ensure that the peer's public key is a valid point on the elliptic curve.
     peersPublicKey.assertOnCurve();
 
