@@ -51,7 +51,7 @@ class ECDHSecp256k1 {
    * The shared secret is derived by performing scalar multiplication of the peer's public key with the local private key.
    * This operation relies on the elliptic curve's property where both parties arrive at the same shared secret.
    * Mathematically, the shared secret is computed as S = dP, where d is the local private key and P is the peer's public key.
-   * 
+   *
    * @param {CanonicalForeignField} privateKey - The local private key.
    * @param {ForeignCurveV2} peersPublicKey - The public key of the peer.
    * @returns {ForeignCurveV2} - The computed shared secret.
