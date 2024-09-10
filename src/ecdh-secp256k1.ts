@@ -1,31 +1,22 @@
-import { Bytes, createEcdsaV2, createForeignCurveV2, Hash, Crypto, Field } from "o1js";
-const payload = new Uint8Array([1]);
+import { createForeignCurveV2, Crypto, CanonicalForeignField, ForeignCurveV2 } from "o1js";
 
-class Curve extends createForeignCurveV2(Crypto.CurveParams.Secp256k1) {}
-class Ecdsa extends createEcdsaV2(Curve) {}
+class Secp256k1Curve extends createForeignCurveV2(Crypto.CurveParams.Secp256k1) { }
 
-function main() {
-  let generator = Curve.generator;
-  console.log(Curve.generator);
-  console.log(Curve.modulus)
+class ECDHSecp256k1 {
+  private static G = Secp256k1Curve.generator;
 
-  let privateKeyAlice = Curve.Scalar.random();
-  let publicKeyAlice = Curve.generator.scale(privateKeyAlice);
+  generateKey(): { privateKey: CanonicalForeignField, publicKey: ForeignCurveV2 } {
+    const privateKey = Secp256k1Curve.Scalar.random();
+    const publicKey = ECDHSecp256k1.G.scale(privateKey);
+    return { privateKey, publicKey };
+  }
 
-  let privateKeyBob = Curve.Scalar.random();
-  let publicKeyBob = Curve.generator.scale(privateKeyBob);
+  publicKey(privateKey: CanonicalForeignField): ForeignCurveV2 {
+    return ECDHSecp256k1.G.scale(privateKey);
+  }
 
-  let aliceCalculatesSharedKey = publicKeyBob.scale(privateKeyAlice);
-  let bobCalculatesSharedKey = publicKeyAlice.scale(privateKeyBob);
-  console.log("Shared Key Alice")
-  console.log(aliceCalculatesSharedKey.x.toBigInt())
-  console.log(aliceCalculatesSharedKey.y.toBigInt())
-  console.log("\n")
-  console.log("Shared Key Bob")
-  console.log(bobCalculatesSharedKey.x.toBigInt())
-  console.log(bobCalculatesSharedKey.y.toBigInt()) 
-
-
+  computeSecret(privateKey: CanonicalForeignField, peersPublicKey: ForeignCurveV2): ForeignCurveV2 {
+    return peersPublicKey.scale(privateKey);
+  }
 }
 
-main();
