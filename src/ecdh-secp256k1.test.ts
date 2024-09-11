@@ -18,7 +18,7 @@ describe('ECDH Secp256k1', () => {
         const expectedPublicKey = Secp256k1Curve.generator.scale(privateKey);
 
         const computedPublicKey = ecdh.publicKey(privateKey);
-        
+
         expect(computedPublicKey.toBigint()).toStrictEqual(expectedPublicKey.toBigint());
     });
 

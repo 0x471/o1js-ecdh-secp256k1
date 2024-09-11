@@ -12,6 +12,33 @@ There are interesting use cases such as:
 - [Balance hiding for DAO treasuries.](https://github.com/lyronctk/treasure-house?tab=readme-ov-file) ([Based on work done by Griffin Dunaif & Dan Boneh](https://hackmd.io/nCASdhqVQNWwMhpTmKpnKQ)).
 
 
+## Overview
+
+| Category          | Count  |
+|-------------------|--------|
+| Total rows        | 21,059 |
+| RangeCheck0       | 5,448  |
+| RangeCheck1       | 2,724  |
+| Zero              | 4,490  |
+| ForeignFieldAdd   | 1,460  |
+| Generic           | 3,939  |
+| ForeignFieldMul   | 798    |
+| Poseidon          | 2,200  |
+
+
+## Performance Metrics
+
+| Task                           | Time         |
+|---------------------------------|--------------|
+| Compile                        | 3.316s       |
+| Generate ECDH keys             | 1.961ms      |
+| Prove Alice                    | 22.432s      |
+| Prove Bob                      | 17.200s      |
+| Verify Alice                   | 818.308ms    |
+| Verify Bob                     | 737.852ms    |
+
+MacBook Pro M1, 8GB RAM
+
 ## How to build
 
 ```sh
