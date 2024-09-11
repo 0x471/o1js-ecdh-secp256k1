@@ -1,16 +1,15 @@
-import { CanonicalForeignField, ForeignCurveV2, Provable, ZkProgram } from 'o1js';
+import { assert, CanonicalForeignField, ZkProgram } from 'o1js';
 import { ECDHSecp256k1, Secp256k1Curve } from './ecdh-secp256k1.js';
 
-// Create a zkSNARK program for verifying the ECDH operation on Secp256k1
 let ecdhVerificationProgram = ZkProgram({
     name: 'ecdh-secp256k1-verification',
-    publicOutput: ForeignCurveV2,
+    publicOutput: Secp256k1Curve,
     methods: {
         verifyECDHSecp256k1: {
-            privateInputs: [Secp256k1Curve.Scalar.Canonical, ForeignCurveV2],
+            privateInputs: [Secp256k1Curve.Scalar.Canonical, Secp256k1Curve],
             async method(
                 userPrivateKey: CanonicalForeignField,
-                peersPublicKey: ForeignCurveV2,
+                peersPublicKey: Secp256k1Curve,
             ) {
                 return ECDHSecp256k1.computeSharedSecret(userPrivateKey, peersPublicKey);
             },
@@ -33,12 +32,29 @@ const { privateKey: alicePrivateKey, publicKey: alicePublicKey } = ecdhInstance.
 const { privateKey: bobPrivateKey, publicKey: bobPublicKey } = ecdhInstance.generateKey();
 console.timeEnd('generate ECDH keys');
 
-console.time('prove');
-let proof = await ecdhVerificationProgram.verifyECDHSecp256k1(alicePrivateKey, bobPublicKey);
-console.timeEnd('prove');
+console.time('prove Alice');
+let proofAlice = await ecdhVerificationProgram.verifyECDHSecp256k1(alicePrivateKey, bobPublicKey);
+console.timeEnd('prove Alice');
 
-console.time('verify');
-let isVerified = await ecdhVerificationProgram.verify(proof);
-console.timeEnd('verify');
+console.time('prove Bob');
+let proofBob = await ecdhVerificationProgram.verifyECDHSecp256k1(bobPrivateKey, alicePublicKey);
+console.timeEnd('prove Bob');
 
-console.log(`Proof verified: ${isVerified}`);
+
+console.time('compare Alice & Bob secret shares')
+console.log(proofAlice.publicOutput.toBigint())
+console.log(proofBob.publicOutput.toBigint())
+console.timeEnd('compare Alice & Bob secret shares')
+
+
+console.time('verify Alice');
+let isVerifiedAlice = await ecdhVerificationProgram.verify(proofAlice);
+console.timeEnd('verify Alice');
+
+
+console.time('verify Bob');
+let isVerifiedBob = await ecdhVerificationProgram.verify(proofBob);
+console.timeEnd('verify Bob');
+
+console.log(`Proof verified Alice: ${isVerifiedAlice}`);
+console.log(`Proof verified Bob: ${isVerifiedBob}`);
